@@ -1,12 +1,24 @@
-function changeText() {
-    var textsArray = ["Text 1", "Text 2", "Text 3", "Text 4", "Text 5"]
-    var number = getRandomNumberBetween(0, textsArray.length - 1)
+var count = 0;
+var counter = document.getElementById('counter');
 
-    console.log("Index: ", number)
-
-    document.getElementById("heading").innerHTML = textsArray[number];
+function update() {
+    counter.textContent = count;
 }
 
-function getRandomNumberBetween(min, max) {
-    return Math.floor(Math.random() * (max - min + 1) + min);
+function increment() {
+    count++;
+
+    update();
+}
+
+function decrement() {
+    count--;
+
+    update();
+}
+
+function resetCounter() {
+    count = 0;
+
+    update();
 }
