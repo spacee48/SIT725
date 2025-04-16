@@ -37,4 +37,20 @@ describe("GET /api/cards", () => {
             done();
         });
     });
+
+    it("should get a single card by ID", done => {
+        const card = new Card({
+            title: "Single Card",
+            subTitle: "Sub",
+            description: "Just one"
+        });
+      
+        card.save().then(savedCard => {
+            Card.findById(savedCard._id).then(found => {
+                expect(found).to.not.be.null;
+                expect(found.title).to.equal("Single Card");
+                done();
+            });
+        });
+    });
 });
