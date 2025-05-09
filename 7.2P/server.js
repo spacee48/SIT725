@@ -1,41 +1,28 @@
-const express = require("express");
-const mongoose = require("mongoose");
-const path = require("path");
-const http = require("http");
-const { Server } = require("socket.io");
+const express = require('express');
+const http    = require('http');
+const { Server } = require('socket.io');
 
-const app = express();
-const port = process.env.PORT || 3000;
-const apiRoutes = require("./routes/api");
-
-mongoose.connect("mongodb://localhost:27017/sit725db", {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-});
-
-const db = mongoose.connection;
-
-db.on("error", console.error.bind(console, "connection error:"));
-db.once("open", () => console.log("Connected to sit725db"));
-
-app.use(express.static(path.join(__dirname, "public")));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-
+const app    = express();
 const server = http.createServer(app);
-const io = new Server(server);
+const io     = new Server(server);
 
-app.set("socketio", io);
-app.use("/api", apiRoutes);
+app.use(express.static('public'));
 
-io.on("connection", (socket) => {
-    console.log("A user connected");
+io.on('connection', (socket) => {
+  console.log(`Client connected [id=${socket.id}]`);
 
-    socket.on("disconnect", () => {
-        console.log("User disconnected");
-    });
+  const ticker = setInterval(() => {
+    const n = Math.floor(Math.random() * 1000);
+    io.emit('randomNumber', n);
+  }, 1000);
+
+  socket.on('disconnect', () => {
+    clearInterval(ticker);
+    console.log(`Client disconnected [id=${socket.id}]`);
+  });
 });
 
-server.listen(port, () => {
-    console.log("Server running on port", port);
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, () => {
+  console.log(`Server listening on http://localhost:${PORT}`);
 });
